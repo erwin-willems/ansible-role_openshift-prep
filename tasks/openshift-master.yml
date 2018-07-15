@@ -20,6 +20,7 @@
     - bash-completion 
     - docker
     - origin-clients
+    - atomic
 
 - name: Configure docker
   replace:
@@ -44,23 +45,21 @@
     - 53/udp
     - 8053/udp
 
-- name: Create firewall zone dockerc
-  firewalld:
-    zone: dockerc
-    state: present
-    permanent: true
+#- name: Create firewall zone dockerc
+#  firewalld:
+#    zone: dockerc
+#    state: present
+#    permanent: true
 
-
-
-- name: Configure firewall for dockerc zone
-  firewalld:
-    permanent: true
-    zone: dockerc
-    source: 172.17.0.0/16
-    state: enabled
-    port: "{{ item }}"
-  with_items:
-    - 8443/tcp
-    - 53/udp
-    - 8053/udp
+#- name: Configure firewall for dockerc zone
+#  firewalld:
+#    permanent: true
+#    zone: dockerc
+#    source: 172.17.0.0/16
+#    state: enabled
+#    port: "{{ item }}"
+#  with_items:
+#    - 8443/tcp
+#    - 53/udp
+#    - 8053/udp
 
