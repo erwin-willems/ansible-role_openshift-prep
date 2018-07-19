@@ -1,5 +1,5 @@
 ---
 
-- include_tasks: openshift-master.yml
+- include_tasks: openshift-prep.yml
 
 
