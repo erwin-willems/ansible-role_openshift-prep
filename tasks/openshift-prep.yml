@@ -1,15 +1,24 @@
 ---
+- name: "Build hosts file"
+  lineinfile: dest=/etc/hosts
+    state=present
+    dest=/etc/hosts
+    regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}}"
+  when: hostvars[item].ansible_default_ipv4.address is defined
+  with_items: "{{ groups['all'] }}"
+
 - name: upgrade all packages
   yum:
     name: '*'
     state: latest
     
-- name: Install openshift-origin repo
-  yum:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - centos-release-openshift-origin
+- name: Add Openshift Origin repository
+  yum_repository:
+    name: origin
+    description: Openshift origin
+    file: external_repos
+    baseurl: https://cbs.centos.org/repos/paas7-openshift-origin310-candidate/x86_64/os/
+    gpgcheck: no
 
 - name: Install required packages
   yum:
@@ -21,11 +30,25 @@
     - net-tools 
     - bind-utils 
     - iptables-services 
+    - yum-utils
     - bridge-utils 
-    - bash-completion 
+    - bash-completion
+    - kexec-tools
+    - sos
+    - psacct 
     - docker
-    - origin-clients
+#    - origin-clients
     - atomic
+
+- name: Configure docker storage
+  blockinfile:
+    create: yes
+    state: present
+    path: /etc/sysconfig/docker-storage-setup
+    block: |
+      DEVS=/dev/sdc
+      VG=docker-vg
+  notify: docker storage setup
 
 - name: Configure docker
   replace:
