@@ -1,11 +1,16 @@
 ---
-- name: "Build hosts file"
-  lineinfile: dest=/etc/hosts
-    state=present
-    dest=/etc/hosts
-    regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}}"
-  when: hostvars[item].ansible_default_ipv4.address is defined
-  with_items: "{{ groups['all'] }}"
+#- name: "Build hosts file"
+#  lineinfile: dest=/etc/hosts
+#    state=present
+#    dest=/etc/hosts
+#    regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}}"
+#  when: hostvars[item].ansible_default_ipv4.address is defined
+#  with_items: "{{ groups['all'] }}"
+
+- name: copy host file
+  copy:
+    src: /etc/hosts
+    dest: /etc/hosts
 
 - name: upgrade all packages
   yum:
@@ -17,7 +22,9 @@
     name: origin
     description: Openshift origin
     file: external_repos
-    baseurl: https://cbs.centos.org/repos/paas7-openshift-origin310-candidate/x86_64/os/
+    baseurl: https://cbs.centos.org/repos/paas7-openshift-origin39-release/x86_64/os/
+#    baseurl: https://cbs.centos.org/repos/paas7-openshift-origin310-candidate/x86_64/os/
+#    baseurl: https://plain.resources.ovirt.org/repos/origin/3.10/v3.10.0-rc.0/
     gpgcheck: no
 
 - name: Install required packages
